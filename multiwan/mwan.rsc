@@ -1,6 +1,6 @@
 ##################################
 # MultiWAN for Mikrotik Router OS
-# v. 0.1.26  29.07.2015
+# v. 0.2.1  04.01.2017
 # (c) Oleg "Kompas" Shulga
 ##################################
 
@@ -12,15 +12,14 @@
 :global WGW;
 :global WSTATE;
 :global WDIST;
-:global WPING;
 
 
 :local IP;
-:local IP0;
+:local GW;
 :local NET;
 :local IFTYPE;
 
-:local scriptName "MWAN";
+:local scriptName "MWAN_2";
 :if ( [:len [/system script job find where script=$scriptName]] > 1) do= { :error "single instance" };
 
 :for i from=0 to=([:len $WIFACE]-1) do={
@@ -40,23 +39,24 @@
         :set NET ($NET.[:pick $IP [:find $IP "/"] 100]);
         :set IP [:pick $IP 0 [:find $IP "/"]];
         :set ($WNET->$i)  $NET;
-           
-#:log info ("DEBUG: IP: $IP on ".($WIFACE->$i));
-  
 
-# Check that ip address has changed
-        :if (($WIP->$i) != $IP) do={ 
+        :set IFTYPE [/interface get [find name=($WIFACE->$i)] type];
+        :if ($IFTYPE="ether") do={
+            :if ([/ip address get [find interface=($WIFACE->$i)] dynamic]) do={ 
+                :set $GW [/ip dhcp-client get [find interface=($WIFACE->$i)] gateway];
+            } else={:set $GW ($WGW->$i);} 
+        }
+        :if ($IFTYPE="ppp-out")   do={ :set $GW [/ip address get [find interface=($WIFACE->$i)] network];}
+        :if ($IFTYPE="pptp-out")  do={ :set $GW [/ip address get [find interface=($WIFACE->$i)] network];}
+        :if ($IFTYPE="pppoe-out") do={ :set $GW [/ip address get [find interface=($WIFACE->$i)] network];}
+ 
+# Check that ip address or GW has changed
+        :if ((($WIP->$i) != $IP) || (($WGW->$i) != $GW)) do={ 
         :if ([/ip address get [find interface=($WIFACE->$i)] dynamic]) do={
-            :log info ("New IP: $IP on ".($WIFACE->$i));
+            :log info ("New IP / GW: $IP / $GW on ".($WIFACE->$i));
             :set ($WIP->$i) $IP; 
-            :set IFTYPE [/interface get [find name=($WIFACE->$i)] type];
-            :if ($IFTYPE="ether") do={ :set ($WGW->$i) [/ip dhcp-client get [find interface=($WIFACE->$i)] gateway];}
-            :if ($IFTYPE="wlan") do={ :set ($WGW->$i) [/ip dhcp-client get [find interface=($WIFACE->$i)] gateway];}
-            :if ($IFTYPE="lte") do={ :set ($WGW->$i) [/ip dhcp-client get [find interface=($WIFACE->$i)] gateway];}
-            :if ($IFTYPE="ppp-out") do={ :set ($WGW->$i) [/ip address get [find interface=($WIFACE->$i)] network];}
-            :if ($IFTYPE="pptp-out") do={ :set ($WGW->$i) [/ip address get [find interface=($WIFACE->$i)] network];}
-            :if ($IFTYPE="pppoe-out") do={ :set ($WGW->$i) [/ip address get [find interface=($WIFACE->$i)] network];}
-
+            :set ($WGW->$i) $GW; 
+           
              /ip route remove [find comment=(($WIFACE->$i)."-MWAN")];
              /ip route rule remove [find comment=(($WIFACE->$i)."-MWAN")];
              /ip route add gateway=($WGW->$i) routing-mark=("ISP".($i+1)) comment=(($WIFACE->$i)."-MWAN");
@@ -66,7 +66,7 @@
          }
 
 # Check that interface is down
-       :local p 0; {:do {:set p ($p + 1)} while (($p < 5) && ([/ping $WPING src-address=($WIP->$i) interval=3 count=1]=0))};
+       :local p 0; {:do {:set p ($p + 1)} while (($p < 5) && ([/ping 8.8.8.8 src-address=($WIP->$i) interval=3 count=1]=0))};
        :if (($p=5) && (($WSTATE->$i)="OK")) do={
             :log info (($WIFACE->$i)." Down");
             /ip route remove [find distance=($WDIST->$i)];
@@ -74,7 +74,7 @@
         }
 
 # Check that interface is up
-       :local p 0; {:do {:set p ($p + 1)} while (($p < 5) && ([/ping $WPING src-address=($WIP->$i) interval=3 count=1]=1))};
+       :local p 0; {:do {:set p ($p + 1)} while (($p < 5) && ([/ping 8.8.8.8 src-address=($WIP->$i) interval=3 count=1]=1))};
        :if (($p=5) && (($WSTATE->$i)="KO")) do={
            :log info (($WIFACE->$i)." Up");
            :set ($WSTATE->$i) "OK";
