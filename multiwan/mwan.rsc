@@ -1,12 +1,11 @@
 ##################################
 # MultiWAN for Mikrotik Router OS
-# v. 0.2.2  19.02.2017
+# v. 0.2.1  04.01.2017
 # (c) Oleg "Kompas" Shulga
 ##################################
 
 :global MWAN true;
 
-:global WSTART;
 :global WIFACE;
 :global WIP;
 :global WNET;
@@ -21,14 +20,11 @@
 :local IFTYPE;
 
 :local scriptName "MWAN_2";
-
-:if (!$WSTART) do= { :error "Multiwan not started" };
-
 :if ( [:len [/system script job find where script=$scriptName]] > 1) do= { :error "single instance" };
 
 :for i from=0 to=([:len $WIFACE]-1) do={
 
-# Check that interface running
+# Check that interface runnings
     :if (![/interface get [find name=($WIFACE->$i)] running]) do={
         :if (($WSTATE->$i)="OK") do={
             :log info (($WIFACE->$i)." do not running");

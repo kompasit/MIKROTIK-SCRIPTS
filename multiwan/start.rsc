@@ -13,14 +13,11 @@
 :global WSTART false;
 :global WDISTBEST 65534;
 :global WDIST (11,21);
-:global WGW ("0.0.0.0", "212.1.115.141");
-:global WIFACE ("pppoe-DG", "WAN2");
-:global WIP ("0.0.0.0", "212.1.115.142");
-:global WNET ("0.0.0.0", "212.1.115.140/30");
+:global WGW ("0.0.0.0","0.0.0.0");
+:global WIFACE ("pppoe-DG","ether5");
+:global WIP ("0.0.0.0","0.0.0.0");
+:global WNET ("0.0.0.0","0.0.0.0");
 :global WSTATE ("KO","KO");
-:global WPING (true,true);
-
-
 
 :local IP;
 :local NET;
@@ -41,9 +38,7 @@
 }
 
 # Static rules
-/ip route rule
-add src-address=212.1.115.142/32 table=ISP2;
-add src-address=217.112.209.56/29 table=ISP1;
-add src-address=212.1.113.120/29 table=ISP2;
+#/ip route rule
+#add src-address=217.112.209.56/29 table=ISP1;
 
 global WSTART true;
