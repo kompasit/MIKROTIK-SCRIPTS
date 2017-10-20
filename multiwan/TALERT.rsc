@@ -6,8 +6,8 @@
        :local TEXT "* Router: $MYHOST *%0A$TTEXT";
        
        
-       :local CHATID "-200602547"; 
-       :local TOKEN "446522207:AAHpZthIT2j11cXbyLHjYETSKd6d4xexMOY";
+       :local CHATID "-xxxxxxxxxxxx"; 
+       :local TOKEN "xxxxxxxxxxxxx";
        :local URL "https://api.telegram.org/bot$TOKEN/sendmessage\?chat_id=$CHATID&text=$TEXT";
        
        #:put $URL;
