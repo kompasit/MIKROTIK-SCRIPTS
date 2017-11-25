@@ -1,15 +1,14 @@
-# 3   name="TALERT" owner="admin" policy=read,write,policy,test 
-#     last-started=oct/20/2017 16:36:47 run-count=36 source=
-       :global TTEXT;
-       :global MYHOST;
-       
-       :local TEXT "* Router: $MYHOST *%0A$TTEXT";
-       
-       
-       :local CHATID "-xxxxxxxxxxxx"; 
-       :local TOKEN "xxxxxxxxxxxxx";
-       :local URL "https://api.telegram.org/bot$TOKEN/sendmessage\?chat_id=$CHATID&text=$TEXT";
-       
-       #:put $URL;
-       
-       /tool fetch url=$URL mode=http keep-result=no;
+:global TTEXT;
+:global MYHOST;
+
+:local TTIME  [/system clock get time];
+:local TDATE [/system clock get date];
+
+:local TEXT "$MYHOST: $TTEXT at $TDATE $TTIME";
+
+
+:local CHATID "-XXX"; 
+:local TOKEN "YYY";
+:local URL "https://api.telegram.org/bot$TOKEN/sendmessage\?chat_id=$CHATID&text=$TEXT";
+
+/tool fetch url=l=$URL keep-result=no
