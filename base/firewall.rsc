@@ -1,14 +1,7 @@
-# jan/22/2021 10:33:48 by RouterOS 6.47.1
-# software id = SZT1-ETE6
-#
-# model = 951Ui-2nD
-# serial number = 925008CC884B
 /ip firewall address-list
-add address=93.77.93.196 list=WHITE-LIST
+add address=192.168.1.1 list=WHITE-LIST
 /ip firewall filter
 add action=jump chain=input jump-target=common
-add action=jump chain=output jump-target=common
-add action=jump chain=forward jump-target=common
 add action=accept chain=input comment="Accept NS requests but not from WAN" \
     connection-state=new dst-port=53,123 in-interface-list=!WAN protocol=udp
 add action=add-src-to-address-list address-list=BLACK-LIST \
@@ -31,7 +24,11 @@ add action=accept chain=input comment="CAPSMANAGER Discovery" \
     in-interface-list=!WAN protocol=udp src-port=5246,5247
 add action=accept chain=input comment="CAPSMANAGER Discovery" dst-port=\
     5246,5247 in-interface-list=!WAN protocol=udp
-add action=drop chain=input in-interface-list=WAN
+add action=drop chain=input in-interface-list=!LAN
+add action=jump chain=output jump-target=common
+add action=drop chain=forward comment="Drop all from WAN not DSTNATed" connection-nat-state=!dstnat \
+    connection-state=new in-interface-list=WAN
+add action=jump chain=forward jump-target=common
 add action=accept chain=common comment=\
     "accept related, established or untracked connections" connection-state=\
     established,related,untracked
