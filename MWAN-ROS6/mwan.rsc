@@ -94,7 +94,7 @@
                 }
             }    
 
-            :if ($p>19) do={
+            :if ($p>18) do={
                 :if ([:len [/ip firewall address-list find address=($WGW->$i) and list="WGOODGW"]] = 0) do={
                     :set ($WTIMEOUT->$i) (($WTIMEOUT->$i) / 2);
                     :if (($WTIMEOUT->$i) < $WMINTIMEOUT) do={:set ($WTIMEOUT->$i) $WMINTIMEOUT};
