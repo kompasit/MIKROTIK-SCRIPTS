@@ -1,8 +1,8 @@
-##################################
+#################################
 # MultiWAN for Mikrotik Router OS
-# v. 0.2.17-flap    25.01.2024
+# v. 0.2.18-flap    19.03.2025
 # (c) Oleg "Compass" Shulga
-##################################
+#################################
 
 :global MWAN true;
 
@@ -17,7 +17,6 @@
 :global WTIMEOUT;
 :global WMINTIMEOUT;
 :global WMAXTIMEOUT;
-
 
 :local IP;
 :local GW;
