@@ -26,7 +26,7 @@ add action=accept chain=input comment="CAPSMANAGER Discovery" dst-port=\
     5246,5247 in-interface-list=!WAN protocol=udp
 add action=drop disabled=yes chain=input in-interface-list=!LAN
 add action=jump chain=output jump-target=common
-add action=drop chain=forward comment="Drop all from WAN not DSTNATed" connection-nat-state=!dstnat \
+add action=drop disabled=yes chain=forward comment="Drop all from WAN not DSTNATed" connection-nat-state=!dstnat \
     connection-state=new in-interface-list=WAN
 add action=jump chain=forward jump-target=common
 add action=accept chain=common comment=\
