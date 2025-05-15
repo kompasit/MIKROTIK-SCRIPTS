@@ -20,9 +20,9 @@
 
 if ($debug or $dd = "01" or $dd = "15") do={
 
-  :set ds ([:pick $ds 9 11] . $mm . [:pick $ds 4 6])
-  :local fname1 ([/system identity get name]."_".$ds.$ts."_auto.backup")
-  :local fname2 ([/system identity get name]."_".$ds.$ts."_auto.rsc")
+  :set ds ([:pick $ds 7 11] . $mm . [:pick $ds 4 6])
+  :local fname1 ([/system identity get name]."_".$ds."-".$ts."_auto.backup")
+  :local fname2 ([/system identity get name]."_".$ds."-".$ts."_auto.rsc")
 
   :foreach i in=[/file find] do={ :if ([:typeof [:find [/file get $i name] "_auto."]]!="nil") do={/file remove $i}; }
 
