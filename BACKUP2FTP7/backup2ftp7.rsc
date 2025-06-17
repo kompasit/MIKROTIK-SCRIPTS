@@ -12,7 +12,7 @@
 :local dd [:pick $ds 8 10]
 
 if ($debug or $dd = "01" or $dd = "15") do={
-  :set ds ([:pick $ds 2 4] . [:pick $ds 5 7] . $dd)
+  :set ds ([:pick $ds 0 4] . [:pick $ds 5 7] . $dd)
   :local ts [/system clock get time]
   :set ts ([:pick $ts 0 2].[:pick $ts 3 5])
   :local fname ([/system identity get name]."_".$ds."-".$ts."_auto")
